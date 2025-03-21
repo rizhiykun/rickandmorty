@@ -88,6 +88,7 @@ class ReviewController extends BaseController
         ]);
     }
 
+    #[Route('/episodes', methods: [Request::METHOD_GET])]
     public function getAllEpisodes(): Response
     {
         return $this->appJson($this->rickAndMortyService->getEpisodes());
