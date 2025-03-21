@@ -1,0 +1,56 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Tests,Kernel.php,DTO}'
+
+    sentiment_analysis:
+        class: davmixcool\Analyzer
+
+      ## --------------- ##
+      ##    Services     ##
+      ## --------------- ##
+
+    app.services.review_service:
+        class: App\Services\ReviewService
+        autowire: true
+        public: true
+        arguments:
+            $reviewRepository: '@App\Repository\ReviewRepository'
+            $reviewFactory: '@App\Factory\ReviewFactory'
+
+#    app.services.analyzer_service:
+#        class: App\Services\SentimentAnalysisService
+#        autowire: true
+#        public: true
+#        arguments:
+#            $analyzer: '@sentiment_analysis'
+
+    app.services.rick_and_morty_service:
+        class: App\Services\RickAndMortyService
+        autowire: true
+        public: true
+
+    app.services.app_serializer:
+        class: App\Services\AppSerializer
+        autowire: true
+        public: true
+
+      ## --------------- ##
+      ##   Controllers   ##
+      ## --------------- ##
+
+    App\Controller\ReviewController:
+        class: App\Controller\ReviewController
+        autowire: true
+        public: true
+        arguments:
+            $appSerializer: '@app.services.app_serializers'
+            $rickAndMortyService: '@app.services.rick_and_morty_service'
+            $reviewRepository: '@App\Repository\ReviewRepository'
+            $reviewService: '@app.services.review_service'
