@@ -15,8 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
 
-#[Route('/review')]
-#[OA\Tag('Apartment')]
+#[Route('/', name: 'review_')]
+#[OA\Tag('Review')]
 class ReviewController extends BaseController
 {
     public function __construct(
@@ -70,6 +70,27 @@ class ReviewController extends BaseController
     }
 
     #[Route('/episode/{id}/summary', methods: [Request::METHOD_GET])]
+    #[OA\Response(
+        response: 200,
+        description: 'Возвращает объект обзора.',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: 'bool'),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
+                        GroupsType::BASE_FIELD,
+                        GroupsType::REVIEW
+                    ])),
+                ], type: 'object'),
+            ]
+        )
+    )]
+    #[OA\PathParameter(
+        name: 'id',
+        description: 'ID эпизода',
+        required: true,
+        example: "12"
+    )]
     public function getEpisodeSummary(int $id): Response
     {
         $episode = $this->rickAndMortyService->getEpisode($id);

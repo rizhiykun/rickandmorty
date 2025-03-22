@@ -50,7 +50,7 @@ services:
         autowire: true
         public: true
         arguments:
-            $appSerializer: '@app.services.app_serializers'
+            $appSerializer: '@app.services.app_serializer'
             $rickAndMortyService: '@app.services.rick_and_morty_service'
             $reviewRepository: '@App\Repository\ReviewRepository'
             $reviewService: '@app.services.review_service'
