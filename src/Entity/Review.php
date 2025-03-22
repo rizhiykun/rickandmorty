@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\GroupsType;
 use App\Interface\ModeratedEntityInterface;
 use App\Interface\ValueQueryInterface;
 use App\Repository\ReviewRepository;
@@ -9,20 +10,24 @@ use App\Traits\UpdateTimestampsTrait;
 use App\Traits\UuidIdTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Review implements ValueQueryInterface, ModeratedEntityInterface
+class Review
 {
     use UuidIdTrait, UpdateTimestampsTrait;
 
     #[ORM\Column(type: Types::INTEGER, length: 25, nullable: true)]
+    #[Groups([GroupsType::REVIEW])]
     private ?int $episodeId = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    #[Groups([GroupsType::REVIEW])]
     private ?string $reviewText = null;
 
     #[ORM\Column(type: Types::FLOAT, length: 25, nullable: true)]
+    #[Groups([GroupsType::REVIEW])]
     private ?float $sentimentScore = null;
 
     public function getEpisodeId(): ?int
