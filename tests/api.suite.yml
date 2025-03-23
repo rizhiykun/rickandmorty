@@ -1,0 +1,11 @@
+class_name: ApiTester
+modules:
+    enabled:
+        - Symfony:
+              app_path: 'src'
+              environment: 'test'
+              var_path: 'var'
+        - REST:
+              depends: Symfony
+        - Doctrine2:
+              depends: Symfony

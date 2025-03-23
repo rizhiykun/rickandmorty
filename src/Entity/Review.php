@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Enum\GroupsType;
-use App\Interface\ModeratedEntityInterface;
-use App\Interface\ValueQueryInterface;
 use App\Repository\ReviewRepository;
 use App\Traits\UpdateTimestampsTrait;
 use App\Traits\UuidIdTrait;

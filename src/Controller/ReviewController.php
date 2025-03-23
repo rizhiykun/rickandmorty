@@ -2,18 +2,29 @@
 
 namespace App\Controller;
 
+use App\DTO\Queries\EpisodesSummaryQuery;
+use App\DTO\Queries\IndexReviewQuery;
+use App\DTO\Queries\PatchReviewQuery;
+use App\DTO\Queries\UpdateReviewQuery;
+use App\DTO\Request\CreateReviewRequest;
+use App\DTO\Responses\Episodes;
+use App\DTO\Responses\EpisodeSummary;
 use App\Entity\Review;
 use App\Enum\GroupsType;
-use App\Repository\ReviewRepository;
 use App\Services\AppSerializer;
 use App\Services\ReviewService;
 use App\Services\RickAndMortyService;
-use App\Services\SentimentAnalysisService;
+use App\Tests\ApiTester;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
+use Codeception\Example;
+
 
 #[Route('/', name: 'review_')]
 #[OA\Tag('Review')]
@@ -22,8 +33,6 @@ class ReviewController extends BaseController
     public function __construct(
         AppSerializer                             $appSerializer,
         private readonly RickAndMortyService      $rickAndMortyService,
-        private readonly SentimentAnalysisService $sentimentAnalysisService,
-        private readonly ReviewRepository         $reviewRepository,
         private readonly ReviewService            $reviewService
     )
     {
@@ -36,52 +45,36 @@ class ReviewController extends BaseController
         description: 'Возвращает созданный объект.',
         content: new OA\JsonContent(
             properties: [
-                new OA\Property(property: 'success', type: 'bool'),
-                new OA\Property(property: 'result', properties: [
-                    new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
-                        GroupsType::BASE_FIELD,
-                    ])),
-                ], type: 'object'),
-            ]
-        )
-    )]
-    #[OA\RequestBody(
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'review', type: 'string', example: 'Text for example'),
-                new OA\Property(property: 'episode_id', type: 'int', example: '123')
-            ]
-        )
-    )]
-    public function submitReview(Request $request, array $groups = [GroupsType::BASE_FIELD]
-    ): Response
-    {
-        $data = json_decode($request->getContent(), true);
-        if (!isset($data['episode_id'], $data['review'])) {
-            return $this->appJson(['error' => 'Missing episode_id or review'], 400);
-        }
-
-        // Perform sentiment analysis
-        $score = $this->sentimentAnalysisService->analyze($data['review']);
-        $this->reviewService->createReview($data['episode_id'], $data['review'], $score);
-
-        //TODO: drop down to service layer
-        return $this->appJson(['message' => 'Review submitted', 'sentiment_score' => $score], groups: $groups);
-    }
-
-    #[Route('/episode/{id}/summary', methods: [Request::METHOD_GET])]
-    #[OA\Response(
-        response: 200,
-        description: 'Возвращает объект обзора.',
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'success', type: 'bool'),
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
                 new OA\Property(property: 'result', properties: [
                     new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
                         GroupsType::BASE_FIELD,
                         GroupsType::REVIEW
                     ])),
-                ], type: 'object'),
+                ], type: Type::BUILTIN_TYPE_OBJECT),
+            ]
+        )
+    )]
+    #[OA\RequestBody(content: new Model(type: CreateReviewRequest::class))]
+    public function submitReview(
+        #[MapRequestPayload]
+        CreateReviewRequest $request,
+        array               $groups = [GroupsType::BASE_FIELD, GroupsType::REVIEW]
+    ): Response
+    {
+        return $this->appJson($this->reviewService->createReview($request->episodeId, $request->review), groups: $groups);
+    }
+
+    #[Route('/episode/{id}/summary', methods: [Request::METHOD_GET])]
+    #[OA\Response(
+        response: 200,
+        description: 'Возвращает сводную информацию об эпизоде.',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: EpisodeSummary::class)),
+                ], type: Type::BUILTIN_TYPE_OBJECT),
             ]
         )
     )]
@@ -93,25 +86,175 @@ class ReviewController extends BaseController
     )]
     public function getEpisodeSummary(int $id): Response
     {
-        $episode = $this->rickAndMortyService->getEpisode($id);
-        if (!$episode) {
-            return $this->json(['error' => 'Episode not found'], 404);
-        }
-
-        $reviews = $this->reviewRepository->findBy(['episodeId' => $id], ['id' => 'DESC'], 3);
-        $averageScore = $this->reviewRepository->getAverageSentimentScore($id);
-
-        return $this->appJson([
-            'episode_name' => $episode['name'],
-            'release_date' => $episode['air_date'],
-            'average_sentiment_score' => $averageScore,
-            'last_reviews' => array_map(fn($r) => $r->getReviewText(), $reviews)
-        ]);
+        return $this->appJson($this->reviewService->getSummary($id));
     }
 
     #[Route('/episodes', methods: [Request::METHOD_GET])]
-    public function getAllEpisodes(): Response
+    #[OA\Response(
+        response: 200,
+        description: "Успешный ответ с информацией об эпизодах",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: Episodes::class)),
+                ], type: 'object'),
+            ]
+        )
+    )]
+    #[OA\QueryParameter(name: 'page', description: 'Номер страницы', example: 1)]
+    public function getAllEpisodes(
+        #[MapQueryString]
+        EpisodesSummaryQuery $query
+    ): Response
     {
-        return $this->appJson($this->rickAndMortyService->getEpisodes());
+        return $this->appJson($this->rickAndMortyService->getEpisodes($query->page));
+    }
+
+    #[Route(methods: [Request::METHOD_GET])]
+    #[OA\Response(
+        response: 200,
+        description: "Список с информацией об обзорах",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
+                        GroupsType::BASE_FIELD,
+                        GroupsType::REVIEW
+                    ])),
+                ], type: Type::BUILTIN_TYPE_OBJECT),
+                new OA\Property(
+                    property: 'pagination',
+                    type: Type::BUILTIN_TYPE_ARRAY,
+                    items: new OA\Items(properties: [
+                        new OA\Property(property: 'page', type: Type::BUILTIN_TYPE_INT),
+                        new OA\Property(property: 'perPage', type: Type::BUILTIN_TYPE_INT),
+                        new OA\Property(property: 'search', type: Type::BUILTIN_TYPE_STRING),
+                    ])
+                ),
+            ]
+        )
+    )]
+    public function listReviews(
+        #[MapQueryString]
+        IndexReviewQuery $query,
+        array $groups = [GroupsType::BASE_FIELD, GroupsType::REVIEW]
+    ): Response
+    {
+        return $this->appJson($this->reviewService->listReviews($query), groups: $groups);
+    }
+
+    #[Route('/{id}',methods: [Request::METHOD_GET])]
+    #[OA\Response(
+        response: 200,
+        description: "Возвращает информацию об обзоре",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
+                        GroupsType::BASE_FIELD,
+                        GroupsType::REVIEW
+                    ])),
+                ], type: Type::BUILTIN_TYPE_OBJECT),
+            ]
+        )
+    )]
+    #[OA\PathParameter(
+        name: 'id',
+        description: 'ID обзора',
+        required: true,
+        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    )]
+    public function getReview(Review $review, array $groups = [GroupsType::BASE_FIELD, GroupsType::REVIEW]): Response
+    {
+        return $this->appJson($review, groups: $groups);
+    }
+
+    #[Route('/{id}',methods: [Request::METHOD_DELETE])]
+    #[OA\Response(
+        response: 200,
+        description: "Удаляет обзор",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+            ]
+        )
+    )]
+    #[OA\PathParameter(
+        name: 'id',
+        description: 'ID обзора',
+        required: true,
+        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    )]
+    public function removeReview(Review $review): Response
+    {
+        $this->reviewService->removeReview($review);
+        return $this->appJson(['success' => true]);
+    }
+
+    #[Route('/{id}',methods: [Request::METHOD_PUT])]
+    #[OA\Response(
+        response: 200,
+        description: "Возвращает информацию об обновленном обзоре",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
+                        GroupsType::BASE_FIELD,
+                        GroupsType::REVIEW
+                    ])),
+                ], type: Type::BUILTIN_TYPE_OBJECT),
+            ]
+        )
+    )]
+    #[OA\PathParameter(
+        name: 'id',
+        description: 'ID обзора',
+        required: true,
+        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    )]
+    public function updateReview(
+        #[MapQueryString]
+        UpdateReviewQuery $query,
+        Review $review
+    ): Response
+    {
+        $this->reviewService->updateReview($review, $query);
+        return $this->appJson($review, groups: [GroupsType::BASE_FIELD, GroupsType::REVIEW]);
+    }
+
+    #[Route('/{id}',methods: [Request::METHOD_PATCH])]
+    #[OA\Response(
+        response: 200,
+        description: "Возвращает информацию обновленном об обзоре",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
+                new OA\Property(property: 'result', properties: [
+                    new OA\Property(property: 'item', ref: new Model(type: Review::class, groups: [
+                        GroupsType::BASE_FIELD,
+                        GroupsType::REVIEW
+                    ])),
+                ], type: Type::BUILTIN_TYPE_OBJECT),
+            ]
+        )
+    )]
+    #[OA\PathParameter(
+        name: 'id',
+        description: 'ID обзора',
+        required: true,
+        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    )]
+    public function patchReview(
+        #[MapQueryString]
+        PatchReviewQuery $query,
+        Review $review
+    ): Response
+    {
+        $this->reviewService->patchReview($review, $query);
+        return $this->appJson($review, groups: [GroupsType::BASE_FIELD, GroupsType::REVIEW]);
     }
 }

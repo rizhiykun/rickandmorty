@@ -5,7 +5,6 @@ namespace App\Services;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use NickBeen\RickAndMortyPhpApi\Api;
 use NickBeen\RickAndMortyPhpApi\Exceptions\NotFoundException;
 
 class RickAndMortyService
@@ -41,19 +40,27 @@ class RickAndMortyService
     /**
      * Get all episodes.
      *
+     * @param int|null $page
      * @return array|null
      * @throws NotFoundException
      */
-    public function getEpisodes(): ?array
+    public function getEpisodes(?int $page = null): ?array
     {
+        $resource = $page ? self::RESOURCE . '?page=' . $page : self::RESOURCE;
         try {
-            $episodes = $this->client->get(self::RESOURCE)->getBody();
+            $episodes = $this->client->get($resource)->getBody();
         } catch (GuzzleException $e) {
             throw NotFoundException::resourceUnavailable();
         } catch (Exception) {
             return null;
         }
 
-        return json_decode($episodes, true);
+        $results = json_decode($episodes, true);
+
+        $result = $results['results'];
+
+        $result['pages'] = $results['info']['pages'];
+        $result['count'] = $results['info']['count'];
+        return $result;
     }
 }
