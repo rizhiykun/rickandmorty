@@ -4,7 +4,7 @@ namespace App\Factory;
 
 use App\Entity\Review;
 
-final readonly class ReviewFactory
+class ReviewFactory
 {
     public function create(
         int $episodeId,
