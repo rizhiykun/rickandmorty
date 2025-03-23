@@ -17,6 +17,7 @@ trait UuidIdTrait
     #[Groups([GroupsType::BASE_FIELD])]
     private $id;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getId(): ?Uuid
     {
         return $this->id;

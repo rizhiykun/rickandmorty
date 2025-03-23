@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/** @psalm-suppress UnusedClass */
 class ResponseSubscriber implements EventSubscriberInterface
 {
     protected SerializerInterface $serializer;
@@ -44,6 +45,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         ) !== false);
     }
 
+    /** @psalm-suppress MissingOverrideAttribute */
     public static function getSubscribedEvents(): array
     {
         return [

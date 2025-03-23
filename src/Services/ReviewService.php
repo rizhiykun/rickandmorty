@@ -14,6 +14,7 @@ class ReviewService extends BaseService
 {
     private const LAST_REVIEWS_LIMIT = 3;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function __construct(
         private readonly ReviewRepository         $reviewRepository,
         private readonly ReviewFactory            $reviewFactory,
@@ -90,6 +91,7 @@ class ReviewService extends BaseService
         $this->reviewRepository->removeById($review);
     }
 
+    /** @psalm-suppress PossiblyUnusedReturnValue */
     public final function patchReview(Review $review, PatchReviewQuery $query): Review
     {
         if ($query->episodeId) {

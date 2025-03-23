@@ -12,6 +12,7 @@ class RickAndMortyService
     private const RESOURCE = 'https://rickandmortyapi.com/api/episode/';
     private Client $client;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function __construct()
     {
         $this->client = new Client(['verify' => false]);

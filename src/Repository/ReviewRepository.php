@@ -14,6 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ReviewRepository extends BaseRepository
 {
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function __construct(
         ManagerRegistry $registry,
     )
@@ -21,6 +22,7 @@ class ReviewRepository extends BaseRepository
         parent::__construct($registry, Review::class);
     }
 
+    /** @psalm-suppress PossiblyUnusedParam */
     public function getAverageSentimentScore(int $episodeId): float
     {
         return $this->createQueryBuilder('r')
@@ -31,6 +33,7 @@ class ReviewRepository extends BaseRepository
             ->getSingleScalarResult();
     }
 
+    /** @psalm-suppress PossiblyUnusedParam */
     public function getIndex(int $page, int $perPage, string $search): array
     {
         $qb = $this->createQueryBuilder('review');

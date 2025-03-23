@@ -18,16 +18,19 @@ trait UpdateTimestampsTrait
     #[Groups([GroupsType::BASE_FIELD])]
     private $updatedAt;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     #[ORM\PrePersist]
     public function prePersistCreateAtTrait()
     {
@@ -35,6 +38,7 @@ trait UpdateTimestampsTrait
         $this->updatedAt = new \DateTimeImmutable('now');
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     #[ORM\PreUpdate]
     #[ORM\PrePersist]
     public function preUpdateUpdateAtTrait()
@@ -42,6 +46,7 @@ trait UpdateTimestampsTrait
         $this->updatedAt = new \DateTimeImmutable('now');
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
@@ -49,6 +54,7 @@ trait UpdateTimestampsTrait
         return $this;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;

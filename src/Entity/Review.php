@@ -28,6 +28,7 @@ class Review
     #[Groups([GroupsType::REVIEW])]
     private ?float $sentimentScore = null;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getEpisodeId(): ?int
     {
         return $this->episodeId;
@@ -40,6 +41,7 @@ class Review
         return $this;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getReviewText(): ?string
     {
         return $this->reviewText;
@@ -52,6 +54,7 @@ class Review
         return $this;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function getSentimentScore(): ?float
     {
         return $this->sentimentScore;
