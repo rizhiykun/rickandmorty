@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 abstract class BaseRepository extends ServiceEntityRepository
 {
+    /** @psalm-suppress PossiblyUnusedParam */
     public function save($entity, bool $flush = true): void
     {
         $this->getEntityManager()->persist($entity);
@@ -15,6 +16,8 @@ abstract class BaseRepository extends ServiceEntityRepository
         }
     }
 
+    /** @psalm-suppress PossiblyUnusedParam */
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function remove($entity, bool $flush = true): mixed
     {
         $this->getEntityManager()->remove($entity);
@@ -26,7 +29,8 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $entity;
     }
 
-    public function removeById($id, bool $flush = true): true
+    /** @psalm-suppress PossiblyUnusedParam */
+    public function removeById($id, bool $flush = true): void
     {
         $entity = $this->find($id);
 
@@ -35,8 +39,6 @@ abstract class BaseRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
-
-        return true;
     }
 
 }

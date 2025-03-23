@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/** @psalm-suppress UnusedClass */
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
@@ -72,6 +73,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $event->setResponse(new JsonResponse($data, $status));
     }
 
+    /** @psalm-suppress MissingOverrideAttribute */
     public static function getSubscribedEvents()
     {
         return [

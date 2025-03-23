@@ -8,6 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 
+/** @psalm-suppress UnusedClass */
 class AppFixtures extends Fixture
 {
     public const EPISODE_1_ID = 1;
@@ -24,6 +25,7 @@ class AppFixtures extends Fixture
 
     private Review $review2;
 
+    /** @psalm-suppress MissingOverrideAttribute */
     public function load(ObjectManager $manager): void
     {
         $this->faker = Factory::create();

@@ -222,8 +222,10 @@ class ReviewController extends BaseController
         Review $review
     ): Response
     {
-        $this->reviewService->updateReview($review, $query);
-        return $this->appJson($review, groups: [GroupsType::BASE_FIELD, GroupsType::REVIEW]);
+        return $this->appJson(
+            $this->reviewService->updateReview($review, $query),
+            groups: [GroupsType::BASE_FIELD, GroupsType::REVIEW]
+        );
     }
 
     #[Route('/{id}',methods: [Request::METHOD_PATCH])]
@@ -254,7 +256,9 @@ class ReviewController extends BaseController
         Review $review
     ): Response
     {
-        $this->reviewService->patchReview($review, $query);
-        return $this->appJson($review, groups: [GroupsType::BASE_FIELD, GroupsType::REVIEW]);
+        return $this->appJson(
+            $this->reviewService->patchReview($review, $query),
+            groups: [GroupsType::BASE_FIELD, GroupsType::REVIEW]
+        );
     }
 }
