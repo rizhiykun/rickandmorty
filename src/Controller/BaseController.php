@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Review;
 use App\Enum\GroupsType;
+use App\Exception\AppException;
 use App\Services\AppSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,5 +37,12 @@ abstract class BaseController extends AbstractController
                 'content-type' => 'application/json',
             ]),
         );
+    }
+
+    public function handleReviewNotFound(?Review $review): void
+    {
+        if (!$review) {
+            throw new AppException('Обзор с таким ID не найден');
+        }
     }
 }
