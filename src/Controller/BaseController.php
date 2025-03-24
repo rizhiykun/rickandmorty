@@ -39,10 +39,4 @@ abstract class BaseController extends AbstractController
         );
     }
 
-    public function handleReviewNotFound(?Review $review): void
-    {
-        if (!$review) {
-            throw new AppException('Обзор с таким ID не найден');
-        }
-    }
 }

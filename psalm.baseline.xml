@@ -5,4 +5,9 @@
       <code><![CDATA[ReviewController]]></code>
     </UnusedClass>
   </file>
+  <file src="src/Controller/EpisodesController.php">
+    <UnusedClass>
+      <code><![CDATA[EpisodesController]]></code>
+    </UnusedClass>
+  </file>
 </files>

@@ -24,6 +24,11 @@ class ReviewService extends BaseService
     {
     }
 
+    /**
+     * @param int $episodeId
+     * @param string $reviewText
+     * @return Review
+     */
     public final function createReview(int $episodeId, string $reviewText): Review
     {
         $score = $this->sentimentAnalysisService->analyze($reviewText);
@@ -32,7 +37,7 @@ class ReviewService extends BaseService
         return $review;
     }
 
-    /**
+    /**@return array{episode_name: mixed, release_date: mixed, average_sentiment_score: float, last_reviews: array|null[]|string[]}
      * @throws AppException
      */
     public final function getSummary(int $episodeId): array
@@ -62,6 +67,10 @@ class ReviewService extends BaseService
         ];
     }
 
+    /**
+     * @param IndexReviewQuery $query
+     * @return array
+     */
     public final function listReviews(IndexReviewQuery $query): array
     {
         [$result, $count] = $this->reviewRepository->getIndex(
@@ -73,9 +82,18 @@ class ReviewService extends BaseService
         return $this->getResult($result, $count, $query->page, $query->perPage);
     }
 
-    public final function updateReview(Review $review, UpdateReviewQuery $query): Review
+    /**
+     * @param Review|null $review
+     * @param UpdateReviewQuery $query
+     * @return Review
+     * @throws AppException
+     */
+    public final function updateReview(?Review $review, UpdateReviewQuery $query): Review
     {
+        $this->handleReviewNotFound($review);
+
         $score = $this->sentimentAnalysisService->analyze($query->review);
+        /** @var Review $review */
         $review
             ->setReviewText($query->review)
             ->setEpisodeId($query->episodeId)
@@ -86,19 +104,34 @@ class ReviewService extends BaseService
         return $review;
     }
 
-    public final function removeReview(Review $review): void
+    /**
+     * @param Review|null $review
+     * @return void
+     * @throws AppException
+     */
+    public final function removeReview(?Review $review): void
     {
+        $this->handleReviewNotFound($review);
         $this->reviewRepository->remove($review);
     }
 
-    /** @psalm-suppress PossiblyUnusedReturnValue */
-    public final function patchReview(Review $review, PatchReviewQuery $query): Review
+    /**
+     * @psalm-suppress PossiblyUnusedReturnValue
+     * @param Review|null $review
+     * @param PatchReviewQuery $query
+     * @return Review|null
+     * @throws AppException
+     */
+    public final function patchReview(?Review $review, PatchReviewQuery $query): ?Review
     {
+        $this->handleReviewNotFound($review);
         if ($query->episodeId) {
+            /** @var Review $review */
             $review->setEpisodeId($query->episodeId);
         }
         if ($query->review) {
             $score = $this->sentimentAnalysisService->analyze($query->review);
+            /** @var Review $review */
             $review
                 ->setReviewText($query->review)
                 ->setSentimentScore($score);
@@ -107,4 +140,15 @@ class ReviewService extends BaseService
         return $review;
     }
 
+    /**
+     * @param Review|null $review
+     * @return void
+     * @throws AppException
+     */
+    public function handleReviewNotFound(?Review $review): void
+    {
+        if (!$review) {
+            throw new AppException('Обзор с таким ID не найден');
+        }
+    }
 }
