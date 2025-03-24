@@ -29,7 +29,7 @@ class ReviewService extends BaseService
      * @param string $reviewText
      * @return Review
      */
-    public final function createReview(int $episodeId, string $reviewText): Review
+    public function createReview(int $episodeId, string $reviewText): Review
     {
         $score = $this->sentimentAnalysisService->analyze($reviewText);
         $review = $this->reviewFactory->create($episodeId, $reviewText, $score);
@@ -37,10 +37,12 @@ class ReviewService extends BaseService
         return $review;
     }
 
-    /**@return array{episode_name: mixed, release_date: mixed, average_sentiment_score: float, last_reviews: array|null[]|string[]}
+    /**
+     * @param int $episodeId
+     * @return array
      * @throws AppException
      */
-    public final function getSummary(int $episodeId): array
+    public function getSummary(int $episodeId): array
     {
         try {
             $episode = $this->rickAndMortyService->getEpisode($episodeId);
@@ -71,7 +73,7 @@ class ReviewService extends BaseService
      * @param IndexReviewQuery $query
      * @return array
      */
-    public final function listReviews(IndexReviewQuery $query): array
+    public function listReviews(IndexReviewQuery $query): array
     {
         [$result, $count] = $this->reviewRepository->getIndex(
             $query->page,
@@ -88,7 +90,7 @@ class ReviewService extends BaseService
      * @return Review
      * @throws AppException
      */
-    public final function updateReview(?Review $review, UpdateReviewQuery $query): Review
+    public function updateReview(?Review $review, UpdateReviewQuery $query): Review
     {
         $this->handleReviewNotFound($review);
 
@@ -109,7 +111,7 @@ class ReviewService extends BaseService
      * @return void
      * @throws AppException
      */
-    public final function removeReview(?Review $review): void
+    public function removeReview(?Review $review): void
     {
         $this->handleReviewNotFound($review);
         $this->reviewRepository->remove($review);
@@ -122,7 +124,7 @@ class ReviewService extends BaseService
      * @return Review|null
      * @throws AppException
      */
-    public final function patchReview(?Review $review, PatchReviewQuery $query): ?Review
+    public function patchReview(?Review $review, PatchReviewQuery $query): ?Review
     {
         $this->handleReviewNotFound($review);
         if ($query->episodeId) {
