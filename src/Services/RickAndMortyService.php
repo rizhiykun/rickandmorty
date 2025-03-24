@@ -20,8 +20,6 @@ class RickAndMortyService
     }
 
     /**
-     * Get a single episode by its ID.
-     *
      * @param int $id
      * @return array|null
      * @throws NotFoundException
@@ -40,8 +38,6 @@ class RickAndMortyService
     }
 
     /**
-     * Get all episodes.
-     *
      * @param string|null $page
      * @return array|null
      * @throws AppException

@@ -6,6 +6,7 @@ use App\DTO\Queries\IndexReviewQuery;
 use App\DTO\Queries\PatchReviewQuery;
 use App\DTO\Queries\UpdateReviewQuery;
 use App\Entity\Review;
+use App\Exception\AppException;
 use App\Factory\ReviewFactory;
 use App\Repository\ReviewRepository;
 use App\Services\ReviewService;
@@ -44,9 +45,6 @@ class ReviewServiceTest extends TestCase
         );
     }
 
-    /**
-     * @covers \App\Services\ReviewService::createReview
-     */
     public function testCreateReview(): void
     {
         $episodeId = 1;
@@ -54,94 +52,212 @@ class ReviewServiceTest extends TestCase
         $sentimentScore = 0.9;
         $review = $this->createMock(Review::class);
 
-        $this->sentimentAnalysisService->method('analyze')->with($reviewText)->willReturn($sentimentScore);
-        $this->reviewFactory->method('create')->with($episodeId, $reviewText, $sentimentScore)->willReturn($review);
-        $this->reviewRepository->expects($this->once())->method('save')->with($review);
+        $this->sentimentAnalysisService->method('analyze')
+            ->with($reviewText)
+            ->willReturn($sentimentScore);
+
+        $this->reviewFactory->method('create')
+            ->with($episodeId, $reviewText, $sentimentScore)
+            ->willReturn($review);
+
+        $this->reviewRepository->expects($this->once())
+            ->method('save')
+            ->with($review);
 
         $result = $this->reviewService->createReview($episodeId, $reviewText);
         $this->assertSame($review, $result);
     }
 
-    /**
-     * @covers \App\Services\ReviewService::getSummary
-     */
-    public function testGetSummary(): void
+    public function testGetSummarySuccess(): void
     {
         $episodeId = 1;
         $episodeData = ['name' => 'Pilot', 'air_date' => '2013-12-02'];
-        $reviews = [$this->createMock(Review::class)];
+        $reviewMock = $this->createMock(Review::class);
+        $reviewMock->method('getReviewText')->willReturn('Great episode!');
 
-        $this->rickAndMortyService->method('getEpisode')->with($episodeId)->willReturn($episodeData);
-        $this->reviewRepository->method('findBy')->willReturn($reviews);
-        $this->reviewRepository->method('getAverageSentimentScore')->willReturn(0.8);
+        $this->rickAndMortyService->method('getEpisode')
+            ->with($episodeId)
+            ->willReturn($episodeData);
+
+        $this->reviewRepository->method('findBy')
+            ->with(
+                ['episodeId' => $episodeId],
+                ['id' => 'DESC'],
+                3
+            )
+            ->willReturn([$reviewMock]);
+
+        $this->reviewRepository->method('getAverageSentimentScore')
+            ->with($episodeId)
+            ->willReturn(0.8);
 
         $result = $this->reviewService->getSummary($episodeId);
 
-        $this->assertSame('Pilot', $result['episode_name']);
-        $this->assertSame('2013-12-02', $result['release_date']);
-        $this->assertSame(0.8, $result['average_sentiment_score']);
+        $this->assertEquals([
+            'episode_name' => 'Pilot',
+            'release_date' => '2013-12-02',
+            'average_sentiment_score' => 0.8,
+            'last_reviews' => ['Great episode!']
+        ], $result);
     }
 
-    /**
-     * @covers \App\Services\ReviewService::updateReview
-     */
+    public function testGetSummaryThrowsAppExceptionWhenEpisodeNotFound(): void
+    {
+        $this->rickAndMortyService->method('getEpisode')->willReturn(null);
+
+        $this->expectException(AppException::class);
+        $this->expectExceptionMessage('Эпизод не найден');
+
+        $this->reviewService->getSummary(1);
+    }
+
+    public function testGetSummaryThrowsAppExceptionWhenApiFails(): void
+    {
+        $this->rickAndMortyService->method('getEpisode')
+            ->willThrowException(new \Exception('API error'));
+
+        $this->expectException(AppException::class);
+        $this->expectExceptionMessage('Ошибка при получении данных об эпизоде');
+
+        $this->reviewService->getSummary(1);
+    }
+
+    public function testListReviews(): void
+    {
+        $query = new IndexReviewQuery(1, 10, 'test');
+        $mockReview = $this->createMock(Review::class);
+
+        $this->reviewRepository->method('getIndex')
+            ->with(1, 10, 'test')
+            ->willReturn([[$mockReview], 1]);
+
+        $result = $this->reviewService->listReviews($query);
+
+        $this->assertArrayHasKey('items', $result);
+        $this->assertArrayHasKey('pagination', $result);
+    }
+
     public function testUpdateReview(): void
     {
         $review = $this->createMock(Review::class);
         $query = new UpdateReviewQuery(1, 'Updated review text');
 
-        $this->sentimentAnalysisService->method('analyze')->willReturn(0.7);
+        $this->sentimentAnalysisService->method('analyze')
+            ->with('Updated review text')
+            ->willReturn(0.7);
 
-        $review->expects($this->once())->method('setReviewText')->with($query->review);
+        $review->expects($this->once())
+            ->method('setReviewText')
+            ->with('Updated review text');
 
-        $this->reviewRepository->expects($this->once())->method('save')->with($review);
+        $this->reviewRepository->expects($this->once())
+            ->method('save')
+            ->with($review);
 
         $result = $this->reviewService->updateReview($review, $query);
         $this->assertSame($review, $result);
     }
 
-    /**
-     * @covers \App\Services\ReviewService::removeReview
-     */
+
+    public function testUpdateReviewThrowsExceptionWhenReviewNotFound(): void
+    {
+        $this->expectException(AppException::class);
+        $this->expectExceptionMessage('Обзор с таким ID не найден');
+
+        $this->reviewService->updateReview(null, new UpdateReviewQuery(1, 'text'));
+    }
+
     public function testRemoveReview(): void
     {
         $review = $this->createMock(Review::class);
 
-        $this->reviewRepository->expects($this->once())->method('remove')->with($review);
+        $this->reviewRepository->expects($this->once())
+            ->method('remove')
+            ->with($review);
 
         $this->reviewService->removeReview($review);
     }
 
-    /**
-     * @covers \App\Services\ReviewService::listReviews
-     */
-    public function testListReviews(): void
+    public function testRemoveReviewThrowsExceptionWhenReviewNotFound(): void
     {
-        $query = new IndexReviewQuery(1, 10, 'test');
-        $mockReviews = [$this->createMock(Review::class)];
+        $this->expectException(AppException::class);
+        $this->expectExceptionMessage('Обзор с таким ID не найден');
 
-        $this->reviewRepository->method('getIndex')->willReturn([$mockReviews, 1]);
-
-        $result = $this->reviewService->listReviews($query);
-
-        $this->assertArrayHasKey('items', $result);
+        $this->reviewService->removeReview(null);
     }
 
-    /**
-     * @covers \App\Services\ReviewService::patchReview
-     */
-    public function testPatchReview(): void
+    public function testPatchReviewWithTextOnly(): void
     {
         $review = $this->createMock(Review::class);
-        $query = new PatchReviewQuery(1, 'Patched review text');
+        $query = new PatchReviewQuery(null, 'Patched review text');
 
-        $this->sentimentAnalysisService->method('analyze')->willReturn(0.6);
+        $this->sentimentAnalysisService->method('analyze')
+            ->with('Patched review text')
+            ->willReturn(0.6);
 
-        $review->expects($this->once())->method('setReviewText')->with($query->review);
+        $review->expects($this->once())
+            ->method('setReviewText')
+            ->with('Patched review text');
+        // Убрана проверка setSentimentScore, так как он вызывается только при наличии review text
+        $review->expects($this->never())
+            ->method('setEpisodeId');
 
-        $this->reviewRepository->expects($this->once())->method('save')->with($review);
+        $this->reviewRepository->expects($this->once())
+            ->method('save')
+            ->with($review);
 
         $result = $this->reviewService->patchReview($review, $query);
         $this->assertSame($review, $result);
+    }
+
+    public function testPatchReviewWithEpisodeIdOnly(): void
+    {
+        $review = $this->createMock(Review::class);
+        $query = new PatchReviewQuery(1, null);
+
+        $this->sentimentAnalysisService->expects($this->never())
+            ->method('analyze');
+
+        $review->expects($this->once())
+            ->method('setEpisodeId')
+            ->with(1);
+        $review->expects($this->never())
+            ->method('setReviewText');
+        $review->expects($this->never())
+            ->method('setSentimentScore');
+
+        $this->reviewRepository->expects($this->once())
+            ->method('save')
+            ->with($review);
+
+        $result = $this->reviewService->patchReview($review, $query);
+        $this->assertSame($review, $result);
+    }
+
+    public function testPatchReviewThrowsExceptionWhenReviewNotFound(): void
+    {
+        $this->expectException(AppException::class);
+        $this->expectExceptionMessage('Обзор с таким ID не найден');
+
+        $this->reviewService->patchReview(null, new PatchReviewQuery(1, 'text'));
+    }
+
+    public function testHandleReviewNotFound(): void
+    {
+        $this->expectException(AppException::class);
+        $this->expectExceptionMessage('Обзор с таким ID не найден');
+
+        $this->reviewService->handleReviewNotFound(null);
+    }
+
+    public function testHandleReviewFound(): void
+    {
+        $review = $this->createMock(Review::class);
+
+        // Ожидаем, что исключение не будет выброшено
+        $this->reviewService->handleReviewNotFound($review);
+
+        // Если тест дойдет до этой точки - значит все ок
+        $this->assertTrue(true);
     }
 }

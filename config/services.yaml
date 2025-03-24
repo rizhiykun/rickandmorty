@@ -44,5 +44,13 @@ services:
         public: true
         arguments:
             $appSerializer: '@app.services.app_serializer'
+            $reviewService: '@app.services.review_service'
+
+    App\Controller\EpisodesController:
+        class: App\Controller\EpisodesController
+        autowire: true
+        public: true
+        arguments:
+            $appSerializer: '@app.services.app_serializer'
             $rickAndMortyService: '@app.services.rick_and_morty_service'
             $reviewService: '@app.services.review_service'
