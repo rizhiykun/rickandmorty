@@ -14,6 +14,13 @@ use App\Services\SentimentAnalysisService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Services\ReviewService
+ * @covers \App\DTO\Queries\PatchReviewQuery
+ * @covers \App\DTO\Queries\IndexReviewQuery
+ * @covers \App\DTO\Queries\UpdateReviewQuery
+ * @covers \App\Services\BaseService
+ */
 class ReviewServiceTest extends TestCase
 {
     private ReviewService $reviewService;
@@ -37,6 +44,9 @@ class ReviewServiceTest extends TestCase
         );
     }
 
+    /**
+     * @covers \App\Services\ReviewService::createReview
+     */
     public function testCreateReview(): void
     {
         $episodeId = 1;
@@ -52,6 +62,9 @@ class ReviewServiceTest extends TestCase
         $this->assertSame($review, $result);
     }
 
+    /**
+     * @covers \App\Services\ReviewService::getSummary
+     */
     public function testGetSummary(): void
     {
         $episodeId = 1;
@@ -69,6 +82,9 @@ class ReviewServiceTest extends TestCase
         $this->assertSame(0.8, $result['average_sentiment_score']);
     }
 
+    /**
+     * @covers \App\Services\ReviewService::updateReview
+     */
     public function testUpdateReview(): void
     {
         $review = $this->createMock(Review::class);
@@ -84,15 +100,21 @@ class ReviewServiceTest extends TestCase
         $this->assertSame($review, $result);
     }
 
+    /**
+     * @covers \App\Services\ReviewService::removeReview
+     */
     public function testRemoveReview(): void
     {
         $review = $this->createMock(Review::class);
 
-        $this->reviewRepository->expects($this->once())->method('removeById')->with($review);
+        $this->reviewRepository->expects($this->once())->method('remove')->with($review);
 
         $this->reviewService->removeReview($review);
     }
 
+    /**
+     * @covers \App\Services\ReviewService::listReviews
+     */
     public function testListReviews(): void
     {
         $query = new IndexReviewQuery(1, 10, 'test');
@@ -105,6 +127,9 @@ class ReviewServiceTest extends TestCase
         $this->assertArrayHasKey('items', $result);
     }
 
+    /**
+     * @covers \App\Services\ReviewService::patchReview
+     */
     public function testPatchReview(): void
     {
         $review = $this->createMock(Review::class);

@@ -14,7 +14,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ReviewRepository extends BaseRepository
 {
-    /** @psalm-suppress PossiblyUnusedMethod */
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function __construct(
         ManagerRegistry $registry,
     )
@@ -34,7 +37,7 @@ class ReviewRepository extends BaseRepository
     }
 
     /** @psalm-suppress PossiblyUnusedParam */
-    public function getIndex(int $page, int $perPage, string $search): array
+    public function getIndex(int $page, int $perPage, ?string $search): array
     {
         $qb = $this->createQueryBuilder('review');
 

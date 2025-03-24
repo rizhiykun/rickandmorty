@@ -7,6 +7,8 @@
 /public/bundles/
 /var/
 /vendor/
+/.phpunit.cache
+/coverage
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

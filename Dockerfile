@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y \
     git unzip libpq-dev libicu-dev libonig-dev \
     postgresql-client \  
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql intl
+    
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

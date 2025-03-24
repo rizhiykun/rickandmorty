@@ -12,6 +12,9 @@ use NickBeen\RickAndMortyPhpApi\Exceptions\NotFoundException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Services\RickAndMortyService
+ */
 class RickAndMortyServiceTest extends TestCase
 {
     private RickAndMortyService $service;
@@ -26,6 +29,9 @@ class RickAndMortyServiceTest extends TestCase
         $this->service = new RickAndMortyService();
     }
 
+    /**
+     * @covers \App\Services\RickAndMortyService::getEpisode
+     */
     public function testGetEpisodeSuccess(): void
     {
         $id = 1;
@@ -54,6 +60,9 @@ class RickAndMortyServiceTest extends TestCase
         $this->assertEquals('Pilot', $episode['name']);
     }
 
+    /**
+     * @covers \App\Services\RickAndMortyService::getEpisode
+     */
     public function testGetEpisodeNotFound(): void
     {
         $this->client->method('get')->willThrowException(new RequestException(
@@ -66,6 +75,9 @@ class RickAndMortyServiceTest extends TestCase
         $this->service->getEpisode(999);
     }
 
+    /**
+     * @covers \App\Services\RickAndMortyService::getEpisodes
+     */
     public function testGetEpisodesSuccess(): void
     {
         $page = 1;

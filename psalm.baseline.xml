@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.7.0@11a32693fb9e33d4f0505de17af41c8fcac698a7">
+  <file src="src/Controller/ReviewController.php">
+    <UnusedClass>
+      <code><![CDATA[ReviewController]]></code>
+    </UnusedClass>
+  </file>
+</files>
