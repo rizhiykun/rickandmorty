@@ -45,11 +45,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $status = 400;
 
         if (method_exists($exception, 'getStatusCode')) {
-            $status = $exception->getStatusCode();
-        } elseif ($exception->getCode() > 99) {
-            $status = $exception->getCode();
-        } elseif ($exception->getMessage() === 'Expired JWT Token') {
-            $status = 401;
+            $status = (int) $exception->getStatusCode();
+        } elseif (is_numeric($exception->getCode()) && (int) $exception->getCode() > 99) {
+            $status = (int) $exception->getCode();
+        }
+
+        if ($status < 100 || $status > 599) {
+            $status = 500; // По умолчанию 500 (Internal Server Error)
         }
 
         // Логируем только нужные исключения
@@ -73,7 +75,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $event->setResponse(new JsonResponse($data, $status));
     }
 
-    /** @psalm-suppress MissingOverrideAttribute */
+    #[\Override]
     public static function getSubscribedEvents()
     {
         return [

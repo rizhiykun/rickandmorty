@@ -31,7 +31,7 @@ class AppSerializer implements SerializerInterface
      * @param array $context Options normalizers/encoders have access to
      * @return string
      */
-    /** @psalm-suppress MissingOverrideAttribute */
+    #[\Override]
     public function serialize(mixed $data, string $format, array $context = []): string
     {
         return $this->getSerializer()->serialize($data, $format, $context);
@@ -97,7 +97,7 @@ class AppSerializer implements SerializerInterface
         return new Serializer($normalizers, $encoders);
     }
 
-    /** @psalm-suppress MissingOverrideAttribute */
+    #[\Override]
     public function deserialize(mixed $data, string $type, string $format, array $context = []): mixed
     {
         return $this->getSerializer()->deserialize($data, $type, $format, $context);

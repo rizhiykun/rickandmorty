@@ -25,7 +25,7 @@ class AppFixtures extends Fixture
 
     private Review $review2;
 
-    /** @psalm-suppress MissingOverrideAttribute */
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $this->faker = Factory::create();

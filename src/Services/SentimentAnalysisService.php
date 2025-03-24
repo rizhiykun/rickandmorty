@@ -10,8 +10,9 @@ class SentimentAnalysisService
 
     /** @psalm-suppress PossiblyUnusedMethod */
     public function __construct(
+        Analyzer $analyzer = null
     ) {
-        $this->analyzer = new Analyzer();
+        $this->analyzer = $analyzer ?: new Analyzer();
     }
 
     public function analyze(string $text): float

@@ -88,7 +88,7 @@ class ReviewService extends BaseService
 
     public final function removeReview(Review $review): void
     {
-        $this->reviewRepository->removeById($review);
+        $this->reviewRepository->remove($review);
     }
 
     /** @psalm-suppress PossiblyUnusedReturnValue */

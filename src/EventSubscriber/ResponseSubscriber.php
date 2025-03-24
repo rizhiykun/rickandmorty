@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Exception\AppException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -24,14 +25,17 @@ class ResponseSubscriber implements EventSubscriberInterface
     {
         $response = $event->getResponse();
 
-        // Check response content type and status
         if ($response->isOk() && $this->shouldSerialize($response)) {
             try {
+                $content = $response->getContent();
+
+                $result = $content !== false ? json_decode($content, true, 512, JSON_THROW_ON_ERROR) : null;
                 $response->setContent($this->serializer->serialize([
                     'success' => true,
-                    'result' => json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR),
+                    'result' => $result,
                 ], 'json'));
             } catch (\JsonException $e) {
+                throw new AppException('Ошибка JSON: ' . $e->getMessage());
             }
         }
     }
@@ -45,7 +49,7 @@ class ResponseSubscriber implements EventSubscriberInterface
         ) !== false);
     }
 
-    /** @psalm-suppress MissingOverrideAttribute */
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [
