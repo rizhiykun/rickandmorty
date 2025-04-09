@@ -16,7 +16,9 @@ class RickAndMortyService
     /** @psalm-suppress PossiblyUnusedMethod */
     public function __construct()
     {
-        $this->client = new Client(['verify' => false]);
+        $this->client = new Client([
+            'verify' => false,
+        ]);
     }
 
     /**

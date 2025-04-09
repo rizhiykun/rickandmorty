@@ -16,7 +16,7 @@ use Symfony\Component\PropertyInfo\Type;
             items: new OA\Items(type: Type::BUILTIN_TYPE_STRING),
             example: [
                 "Strange, bad cinema",
-                "This is the best, beatiful cinema ever"
+                "This is the best, beatiful cinema ever",
             ]
         ),
     ],

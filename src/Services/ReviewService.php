@@ -55,8 +55,11 @@ class ReviewService extends BaseService
 
         $reviews = $this->reviewRepository->findBy(
             [
-            'episodeId' => $episodeId],
-            ['id' => 'DESC'],
+                'episodeId' => $episodeId,
+            ],
+            [
+                'id' => 'DESC',
+            ],
             self::LAST_REVIEWS_LIMIT
         );
         $averageScore = $this->reviewRepository->getAverageSentimentScore($episodeId);
@@ -65,7 +68,7 @@ class ReviewService extends BaseService
             'episode_name' => $episode['name'],
             'release_date' => $episode['air_date'],
             'average_sentiment_score' => $averageScore,
-            'last_reviews' => array_map(fn ($r) => $r->getReviewText(), $reviews)
+            'last_reviews' => array_map(fn ($r) => $r->getReviewText(), $reviews),
         ];
     }
 

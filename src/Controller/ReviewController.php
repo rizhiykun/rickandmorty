@@ -131,7 +131,9 @@ class ReviewController extends BaseController
     public function removeReview(?Review $review): Response
     {
         $this->reviewService->removeReview($review);
-        return $this->appJson(['success' => true]);
+        return $this->appJson([
+            'success' => true,
+        ]);
     }
 
     #[Route('/{id}', methods: [Request::METHOD_PUT])]

@@ -18,7 +18,7 @@ use Symfony\Component\PropertyInfo\Type;
             items: new OA\Items(type: Type::BUILTIN_TYPE_STRING),
             example: [
                 "https://rickandmortyapi.com/api/character/1",
-                "https://rickandmortyapi.com/api/character/2"
+                "https://rickandmortyapi.com/api/character/2",
             ]
         ),
         new OA\Property(property: "url", type: Type::BUILTIN_TYPE_STRING, example: "https://rickandmortyapi.com/api/episode/1"),
