@@ -24,7 +24,7 @@ return ECSConfig::configure()
         SetList::COMMENTS,
         SetList::DOCTRINE_ANNOTATIONS,
         SetList::NAMESPACES,
-        SetList::CONTROL_STRUCTURES
+        SetList::CONTROL_STRUCTURES,
     ])
 
      ;

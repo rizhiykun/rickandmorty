@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Review;
@@ -24,12 +26,13 @@ class ReviewRepository extends BaseRepository
     /** @psalm-suppress PossiblyUnusedParam */
     public function getAverageSentimentScore(int $episodeId): float
     {
-        return $this->createQueryBuilder('r')
+        $result = $this->createQueryBuilder('r')
             ->select('AVG(r.sentimentScore)')
             ->andWhere('r.episodeId = :episodeId')
             ->setParameter('episodeId', $episodeId)
             ->getQuery()
             ->getSingleScalarResult();
+        return (float)$result;
     }
 
     /** @psalm-suppress PossiblyUnusedParam */
