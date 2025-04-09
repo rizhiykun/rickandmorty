@@ -46,10 +46,8 @@ class ReviewController extends BaseController
         )
     )]
     #[OA\RequestBody(content: new Model(type: CreateReviewRequest::class))]
-    public function submitReview(
-        #[MapRequestPayload]
-        CreateReviewRequest $request
-    ): Response {
+    public function submitReview(#[MapRequestPayload] CreateReviewRequest $request): Response
+    {
         return $this->appJson(
             data: $this->reviewService->createReview($request->episodeId, $request->review),
             groups: self::REVIEW_GROUPS
@@ -78,10 +76,8 @@ class ReviewController extends BaseController
             ]
         )
     )]
-    public function listReviews(
-        #[MapQueryString]
-        IndexReviewQuery $query
-    ): Response {
+    public function listReviews(#[MapQueryString] IndexReviewQuery $query): Response
+    {
         return $this->appJson($this->reviewService->listReviews($query), groups: self::REVIEW_GROUPS);
     }
 
@@ -116,9 +112,7 @@ class ReviewController extends BaseController
         response: 200,
         description: "Удаляет обзор",
         content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
-            ]
+            properties: [new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL)]
         )
     )]
     #[OA\PathParameter(
@@ -156,15 +150,9 @@ class ReviewController extends BaseController
         schema: new OA\Schema(type: 'string'),
         example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     )]
-    public function updateReview(
-        #[MapQueryString]
-        UpdateReviewQuery $query,
-        ?Review           $review
-    ): Response {
-        return $this->appJson(
-            $this->reviewService->updateReview($review, $query),
-            groups: self::REVIEW_GROUPS
-        );
+    public function updateReview(#[MapQueryString] UpdateReviewQuery $query, ?Review $review): Response
+    {
+        return $this->appJson($this->reviewService->updateReview($review, $query), groups: self::REVIEW_GROUPS);
     }
 
     #[Route('/{id}', methods: [Request::METHOD_PATCH])]
@@ -187,14 +175,8 @@ class ReviewController extends BaseController
         schema: new OA\Schema(type: 'string'),
         example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     )]
-    public function patchReview(
-        #[MapQueryString]
-        PatchReviewQuery $query,
-        ?Review          $review
-    ): Response {
-        return $this->appJson(
-            $this->reviewService->patchReview($review, $query),
-            groups: self::REVIEW_GROUPS
-        );
+    public function patchReview(#[MapQueryString] PatchReviewQuery $query, ?Review $review): Response
+    {
+        return $this->appJson($this->reviewService->patchReview($review, $query), groups: self::REVIEW_GROUPS);
     }
 }

@@ -14,10 +14,7 @@ use Symfony\Component\PropertyInfo\Type;
             property: "last_reviews",
             type: "array",
             items: new OA\Items(type: Type::BUILTIN_TYPE_STRING),
-            example: [
-                "Strange, bad cinema",
-                "This is the best, beatiful cinema ever",
-            ]
+            example: ["Strange, bad cinema", "This is the best, beatiful cinema ever"]
         ),
     ],
     type: "object"

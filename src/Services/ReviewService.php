@@ -78,11 +78,7 @@ class ReviewService extends BaseService
      */
     public function listReviews(IndexReviewQuery $query): array
     {
-        [$result, $count] = $this->reviewRepository->getIndex(
-            $query->page,
-            $query->perPage,
-            $query->search
-        );
+        [$result, $count] = $this->reviewRepository->getIndex($query->page, $query->perPage, $query->search);
 
         return $this->getResult($result, $count, $query->page, $query->perPage);
     }

@@ -9,9 +9,8 @@ class SentimentAnalysisService
     private Analyzer $analyzer;
 
     /** @psalm-suppress PossiblyUnusedMethod */
-    public function __construct(
-        Analyzer $analyzer = null
-    ) {
+    public function __construct(Analyzer $analyzer = null)
+    {
         $this->analyzer = $analyzer ?: new Analyzer();
     }
 

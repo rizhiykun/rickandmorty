@@ -16,9 +16,8 @@ class ReviewRepository extends BaseRepository
      * @psalm-suppress PossiblyUnusedMethod
      * @psalm-suppress PossiblyUnusedParam
      */
-    public function __construct(
-        ManagerRegistry $registry,
-    ) {
+    public function __construct(ManagerRegistry $registry)
+    {
         parent::__construct($registry, Review::class);
     }
 

@@ -67,10 +67,8 @@ class EpisodesController extends BaseController
         )
     )]
     #[OA\QueryParameter(name: 'page', description: 'Номер страницы', example: 1)]
-    public function getAllEpisodes(
-        #[MapQueryString]
-        EpisodesSummaryQuery $query
-    ): Response {
+    public function getAllEpisodes(#[MapQueryString] EpisodesSummaryQuery $query): Response
+    {
         return $this->appJson($this->rickAndMortyService->getEpisodes($query->page));
     }
 }

@@ -6,11 +6,8 @@ use App\Entity\Review;
 
 class ReviewFactory
 {
-    public function create(
-        int $episodeId,
-        string $reviewText,
-        float $sentimentScore
-    ): Review {
+    public function create(int $episodeId, string $reviewText, float $sentimentScore): Review
+    {
         $review = new Review();
 
         $review

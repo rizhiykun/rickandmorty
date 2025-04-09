@@ -16,12 +16,13 @@ use Symfony\Component\PropertyInfo\Type;
             property: "characters",
             type: "array",
             items: new OA\Items(type: Type::BUILTIN_TYPE_STRING),
-            example: [
-                "https://rickandmortyapi.com/api/character/1",
-                "https://rickandmortyapi.com/api/character/2",
-            ]
+            example: ["https://rickandmortyapi.com/api/character/1", "https://rickandmortyapi.com/api/character/2"]
         ),
-        new OA\Property(property: "url", type: Type::BUILTIN_TYPE_STRING, example: "https://rickandmortyapi.com/api/episode/1"),
+        new OA\Property(
+            property: "url",
+            type: Type::BUILTIN_TYPE_STRING,
+            example: "https://rickandmortyapi.com/api/episode/1"
+        ),
         new OA\Property(property: "created", type: Type::BUILTIN_TYPE_STRING, example: "2017-11-10T12:56:33.798Z"),
     ],
     type: "object"
