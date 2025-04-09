@@ -46,7 +46,7 @@ class EpisodesController extends BaseController
         description: 'ID эпизода',
         required: true,
         schema: new OA\Schema(type: 'integer'),
-        example: "12"
+        example: '12'
     )]
     public function getEpisodeSummary(int $id): Response
     {
@@ -56,7 +56,7 @@ class EpisodesController extends BaseController
     #[Route('/episodes', methods: [Request::METHOD_GET])]
     #[OA\Response(
         response: 200,
-        description: "Успешный ответ с информацией об эпизодах",
+        description: 'Успешный ответ с информацией об эпизодах',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),

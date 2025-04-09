@@ -21,10 +21,10 @@ return ECSConfig::configure()
         SetList::PSR_12,
         SetList::ARRAY,
         SetList::CLEAN_CODE,
-//        SetList::SYMPLIFY,
-//        SetList::COMMENTS,
-//        SetList::DOCTRINE_ANNOTATIONS,
-//        SetList::NAMESPACES
+        SetList::COMMENTS,
+        SetList::DOCTRINE_ANNOTATIONS,
+        SetList::NAMESPACES,
+        SetList::CONTROL_STRUCTURES
     ])
 
      ;

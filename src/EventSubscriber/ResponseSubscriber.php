@@ -39,6 +39,14 @@ class ResponseSubscriber implements EventSubscriberInterface
         }
     }
 
+    #[\Override]
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
+    }
+
     private function shouldSerialize(Response $response): bool
     {
         $contentType = $response->headers->get('content-type');
@@ -46,13 +54,5 @@ class ResponseSubscriber implements EventSubscriberInterface
             $contentType,
             'application/json'
         ) !== false);
-    }
-
-    #[\Override]
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::RESPONSE => 'onKernelResponse',
-        ];
     }
 }

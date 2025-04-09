@@ -57,7 +57,7 @@ class ReviewController extends BaseController
     #[Route(methods: [Request::METHOD_GET])]
     #[OA\Response(
         response: 200,
-        description: "Список с информацией об обзорах",
+        description: 'Список с информацией об обзорах',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
@@ -84,7 +84,7 @@ class ReviewController extends BaseController
     #[Route('/{id}', methods: [Request::METHOD_GET])]
     #[OA\Response(
         response: 200,
-        description: "Возвращает информацию об обзоре",
+        description: 'Возвращает информацию об обзоре',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
@@ -99,7 +99,7 @@ class ReviewController extends BaseController
         description: 'ID обзора',
         required: true,
         schema: new OA\Schema(type: Type::BUILTIN_TYPE_STRING),
-        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
     )]
     public function getReview(?Review $review): Response
     {
@@ -110,7 +110,7 @@ class ReviewController extends BaseController
     #[Route('/{id}', methods: [Request::METHOD_DELETE])]
     #[OA\Response(
         response: 200,
-        description: "Удаляет обзор",
+        description: 'Удаляет обзор',
         content: new OA\JsonContent(
             properties: [new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL)]
         )
@@ -120,7 +120,7 @@ class ReviewController extends BaseController
         description: 'ID обзора',
         required: true,
         schema: new OA\Schema(type: 'string'),
-        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
     )]
     public function removeReview(?Review $review): Response
     {
@@ -133,7 +133,7 @@ class ReviewController extends BaseController
     #[Route('/{id}', methods: [Request::METHOD_PUT])]
     #[OA\Response(
         response: 200,
-        description: "Возвращает информацию об обновленном обзоре",
+        description: 'Возвращает информацию об обновленном обзоре',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
@@ -148,7 +148,7 @@ class ReviewController extends BaseController
         description: 'ID обзора',
         required: true,
         schema: new OA\Schema(type: 'string'),
-        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
     )]
     public function updateReview(#[MapQueryString] UpdateReviewQuery $query, ?Review $review): Response
     {
@@ -158,7 +158,7 @@ class ReviewController extends BaseController
     #[Route('/{id}', methods: [Request::METHOD_PATCH])]
     #[OA\Response(
         response: 200,
-        description: "Возвращает информацию обновленном об обзоре",
+        description: 'Возвращает информацию обновленном об обзоре',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
@@ -173,7 +173,7 @@ class ReviewController extends BaseController
         description: 'ID обзора',
         required: true,
         schema: new OA\Schema(type: 'string'),
-        example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
     )]
     public function patchReview(#[MapQueryString] PatchReviewQuery $query, ?Review $review): Response
     {
