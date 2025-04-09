@@ -26,4 +26,6 @@ use Symfony\Component\PropertyInfo\Type;
     ],
     type: "object"
 )]
-class Episodes {}
+class Episodes
+{
+}

@@ -11,25 +11,24 @@ use App\Enum\GroupsType;
 use App\Services\AppSerializer;
 use App\Services\ReviewService;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
-
 
 #[Route('/', name: 'review_')]
 #[OA\Tag('Review')]
 class ReviewController extends BaseController
 {
-    const REVIEW_GROUPS = [GroupsType::BASE_FIELD, GroupsType::REVIEW];
+    public const REVIEW_GROUPS = [GroupsType::BASE_FIELD, GroupsType::REVIEW];
+
     public function __construct(
-        AppSerializer                             $appSerializer,
-        private readonly ReviewService            $reviewService
-    )
-    {
+        AppSerializer                  $appSerializer,
+        private readonly ReviewService $reviewService
+    ) {
         parent::__construct($appSerializer);
     }
 
@@ -50,10 +49,9 @@ class ReviewController extends BaseController
     public function submitReview(
         #[MapRequestPayload]
         CreateReviewRequest $request
-    ): Response
-    {
+    ): Response {
         return $this->appJson(
-            $this->reviewService->createReview($request->episodeId, $request->review),
+            data: $this->reviewService->createReview($request->episodeId, $request->review),
             groups: self::REVIEW_GROUPS
         );
     }
@@ -83,12 +81,11 @@ class ReviewController extends BaseController
     public function listReviews(
         #[MapQueryString]
         IndexReviewQuery $query
-    ): Response
-    {
+    ): Response {
         return $this->appJson($this->reviewService->listReviews($query), groups: self::REVIEW_GROUPS);
     }
 
-    #[Route('/{id}',methods: [Request::METHOD_GET])]
+    #[Route('/{id}', methods: [Request::METHOD_GET])]
     #[OA\Response(
         response: 200,
         description: "Возвращает информацию об обзоре",
@@ -105,7 +102,7 @@ class ReviewController extends BaseController
         name: 'id',
         description: 'ID обзора',
         required: true,
-        schema: new OA\Schema(type: 'string'),
+        schema: new OA\Schema(type: Type::BUILTIN_TYPE_STRING),
         example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     )]
     public function getReview(?Review $review): Response
@@ -114,7 +111,7 @@ class ReviewController extends BaseController
         return $this->appJson($review, groups: self::REVIEW_GROUPS);
     }
 
-    #[Route('/{id}',methods: [Request::METHOD_DELETE])]
+    #[Route('/{id}', methods: [Request::METHOD_DELETE])]
     #[OA\Response(
         response: 200,
         description: "Удаляет обзор",
@@ -137,7 +134,7 @@ class ReviewController extends BaseController
         return $this->appJson(['success' => true]);
     }
 
-    #[Route('/{id}',methods: [Request::METHOD_PUT])]
+    #[Route('/{id}', methods: [Request::METHOD_PUT])]
     #[OA\Response(
         response: 200,
         description: "Возвращает информацию об обновленном обзоре",
@@ -160,16 +157,15 @@ class ReviewController extends BaseController
     public function updateReview(
         #[MapQueryString]
         UpdateReviewQuery $query,
-        ?Review $review
-    ): Response
-    {
+        ?Review           $review
+    ): Response {
         return $this->appJson(
             $this->reviewService->updateReview($review, $query),
             groups: self::REVIEW_GROUPS
         );
     }
 
-    #[Route('/{id}',methods: [Request::METHOD_PATCH])]
+    #[Route('/{id}', methods: [Request::METHOD_PATCH])]
     #[OA\Response(
         response: 200,
         description: "Возвращает информацию обновленном об обзоре",
@@ -192,9 +188,8 @@ class ReviewController extends BaseController
     public function patchReview(
         #[MapQueryString]
         PatchReviewQuery $query,
-        ?Review $review
-    ): Response
-    {
+        ?Review          $review
+    ): Response {
         return $this->appJson(
             $this->reviewService->patchReview($review, $query),
             groups: self::REVIEW_GROUPS

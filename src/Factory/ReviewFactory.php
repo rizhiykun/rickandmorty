@@ -17,7 +17,7 @@ class ReviewFactory
             ->setEpisodeId($episodeId)
             ->setReviewText($reviewText)
             ->setSentimentScore($sentimentScore)
-            ;
+        ;
 
         return $review;
     }

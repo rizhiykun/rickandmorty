@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Review;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,8 +18,7 @@ class ReviewRepository extends BaseRepository
      */
     public function __construct(
         ManagerRegistry $registry,
-    )
-    {
+    ) {
         parent::__construct($registry, Review::class);
     }
 

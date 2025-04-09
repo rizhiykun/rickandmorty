@@ -2,8 +2,8 @@
 
 namespace App\DTO\Responses;
 
-use Symfony\Component\PropertyInfo\Type;
 use OpenApi\Attributes as OA;
+use Symfony\Component\PropertyInfo\Type;
 
 #[OA\Schema(
     properties: [
@@ -22,4 +22,6 @@ use OpenApi\Attributes as OA;
     ],
     type: "object"
 )]
-class EpisodeSummary {}
+class EpisodeSummary
+{
+}

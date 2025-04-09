@@ -20,8 +20,7 @@ class ReviewService extends BaseService
         private readonly ReviewFactory            $reviewFactory,
         private readonly RickAndMortyService      $rickAndMortyService,
         private readonly SentimentAnalysisService $sentimentAnalysisService
-    )
-    {
+    ) {
     }
 
     /**
@@ -54,7 +53,8 @@ class ReviewService extends BaseService
             throw new AppException('Эпизод не найден');
         }
 
-        $reviews = $this->reviewRepository->findBy([
+        $reviews = $this->reviewRepository->findBy(
+            [
             'episodeId' => $episodeId],
             ['id' => 'DESC'],
             self::LAST_REVIEWS_LIMIT
@@ -65,7 +65,7 @@ class ReviewService extends BaseService
             'episode_name' => $episode['name'],
             'release_date' => $episode['air_date'],
             'average_sentiment_score' => $averageScore,
-            'last_reviews' => array_map(fn($r) => $r->getReviewText(), $reviews)
+            'last_reviews' => array_map(fn ($r) => $r->getReviewText(), $reviews)
         ];
     }
 

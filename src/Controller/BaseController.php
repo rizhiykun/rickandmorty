@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Review;
 use App\Enum\GroupsType;
-use App\Exception\AppException;
 use App\Services\AppSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +10,6 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 abstract class BaseController extends AbstractController
 {
-
     public function __construct(
         private readonly AppSerializer $appSerializer
     ) {
@@ -38,5 +35,4 @@ abstract class BaseController extends AbstractController
             ]),
         );
     }
-
 }

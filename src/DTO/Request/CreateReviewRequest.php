@@ -14,8 +14,6 @@ final readonly class CreateReviewRequest
         #[Assert\NotBlank(message: 'Поле review не может быть пустым')]
         #[Assert\Type(type: Type::BUILTIN_TYPE_STRING, message: 'Поле review должно быть строкой')]
         public string $review
-    )
-    {
+    ) {
     }
-
 }

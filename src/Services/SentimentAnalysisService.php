@@ -20,5 +20,4 @@ class SentimentAnalysisService
         $result = $this->analyzer->getSentiment($text);
         return $result['compound'];
     }
-
 }
