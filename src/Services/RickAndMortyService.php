@@ -12,15 +12,16 @@ use NickBeen\RickAndMortyPhpApi\Exceptions\NotFoundException;
 
 class RickAndMortyService
 {
-    private const RESOURCE = 'https://rickandmortyapi.com/api/episode/';
+    private string $url;
     private Client $client;
 
     /** @psalm-suppress PossiblyUnusedMethod */
-    public function __construct()
+    public function __construct(string $url)
     {
         $this->client = new Client([
             'verify' => false,
         ]);
+        $this->url = $url;
     }
 
     /**
@@ -31,7 +32,7 @@ class RickAndMortyService
     public function getEpisode(int $id): ?array
     {
         try {
-            $episode = $this->client->get(self::RESOURCE . (string)$id)->getBody();
+            $episode = $this->client->get($this->url . (string)$id)->getBody();
         } catch (GuzzleException $e) {
             throw NotFoundException::resourceUnavailable();
         } catch (Exception) {
@@ -49,7 +50,7 @@ class RickAndMortyService
      */
     public function getEpisodes(?string $page = null): ?array
     {
-        $resource = $page ? self::RESOURCE . '?page=' . $page : self::RESOURCE;
+        $resource = $page ? $this->url . '?page=' . $page : $this->url;
         try {
             $episodes = $this->client->get($resource)->getBody();
         } catch (GuzzleException $e) {
