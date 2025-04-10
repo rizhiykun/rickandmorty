@@ -19,6 +19,7 @@ use ReflectionClass;
  */
 class RickAndMortyServiceTest extends TestCase
 {
+    public const URL = 'https://test.url';
     private RickAndMortyService $service;
     private Client|MockObject $client;
 
@@ -27,7 +28,7 @@ class RickAndMortyServiceTest extends TestCase
         parent::setUp();
 
         $this->client = $this->createMock(Client::class);
-        $this->service = new RickAndMortyService();
+        $this->service = new RickAndMortyService(self::URL);
 
         // Инъекция мока клиента через рефлексию
         $reflection = new ReflectionClass($this->service);
@@ -142,7 +143,7 @@ class RickAndMortyServiceTest extends TestCase
 
         $this->client->expects($this->once())
             ->method('get')
-            ->with('https://rickandmortyapi.com/api/episode/')
+            ->with(self::URL)
             ->willReturn($response);
 
         $result = $this->service->getEpisodes();

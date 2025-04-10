@@ -1,9 +1,12 @@
 parameters:
+    app.rm.api.url: '%env(RM_API_URL)%'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            string $url: '%app.rm.api.url%'
 
     App\:
         resource: '../src/*'
@@ -28,6 +31,10 @@ services:
         class: App\Services\RickAndMortyService
         autowire: true
         public: true
+        arguments:
+            $url: '%app.rm.api.url%'
+
+
 
     app.services.app_serializer:
         class: App\Services\AppSerializer

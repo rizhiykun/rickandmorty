@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Review;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,9 +18,7 @@ class ReviewRepository extends BaseRepository
      * @psalm-suppress PossiblyUnusedMethod
      * @psalm-suppress PossiblyUnusedParam
      */
-    public function __construct(
-        ManagerRegistry $registry,
-    )
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Review::class);
     }
@@ -28,12 +26,13 @@ class ReviewRepository extends BaseRepository
     /** @psalm-suppress PossiblyUnusedParam */
     public function getAverageSentimentScore(int $episodeId): float
     {
-        return $this->createQueryBuilder('r')
+        $result = $this->createQueryBuilder('r')
             ->select('AVG(r.sentimentScore)')
             ->andWhere('r.episodeId = :episodeId')
             ->setParameter('episodeId', $episodeId)
             ->getQuery()
             ->getSingleScalarResult();
+        return (float)$result;
     }
 
     /** @psalm-suppress PossiblyUnusedParam */

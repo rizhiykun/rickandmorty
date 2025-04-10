@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Services;
+declare(strict_types=1);
 
-use App\Exception\AppException;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+namespace App\Services;
 
 abstract class BaseService
 {

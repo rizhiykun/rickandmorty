@@ -15,9 +15,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 class ResponseSubscriber implements EventSubscriberInterface
 {
     protected SerializerInterface $serializer;
-    public function __construct(
-        SerializerInterface $serializer
-    ) {
+    public function __construct(SerializerInterface $serializer)
+    {
         $this->serializer = $serializer;
     }
 
@@ -40,6 +39,14 @@ class ResponseSubscriber implements EventSubscriberInterface
         }
     }
 
+    #[\Override]
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
+    }
+
     private function shouldSerialize(Response $response): bool
     {
         $contentType = $response->headers->get('content-type');
@@ -47,13 +54,5 @@ class ResponseSubscriber implements EventSubscriberInterface
             $contentType,
             'application/json'
         ) !== false);
-    }
-
-    #[\Override]
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::RESPONSE => 'onKernelResponse',
-        ];
     }
 }

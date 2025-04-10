@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Review;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 
 abstract class BaseRepository extends ServiceEntityRepository
 {
@@ -42,5 +42,4 @@ abstract class BaseRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\DTO\Queries\EpisodesSummaryQuery;
@@ -9,24 +11,22 @@ use App\Services\AppSerializer;
 use App\Services\ReviewService;
 use App\Services\RickAndMortyService;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 #[Route('/', name: 'episodes_')]
 #[OA\Tag('Episodes')]
 class EpisodesController extends BaseController
 {
-
     public function __construct(
         AppSerializer                             $appSerializer,
         private readonly RickAndMortyService      $rickAndMortyService,
         private readonly ReviewService            $reviewService
-    )
-    {
+    ) {
         parent::__construct($appSerializer);
     }
 
@@ -48,7 +48,7 @@ class EpisodesController extends BaseController
         description: 'ID эпизода',
         required: true,
         schema: new OA\Schema(type: 'integer'),
-        example: "12"
+        example: '12'
     )]
     public function getEpisodeSummary(int $id): Response
     {
@@ -58,7 +58,7 @@ class EpisodesController extends BaseController
     #[Route('/episodes', methods: [Request::METHOD_GET])]
     #[OA\Response(
         response: 200,
-        description: "Успешный ответ с информацией об эпизодах",
+        description: 'Успешный ответ с информацией об эпизодах',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'success', type: Type::BUILTIN_TYPE_BOOL),
@@ -69,10 +69,7 @@ class EpisodesController extends BaseController
         )
     )]
     #[OA\QueryParameter(name: 'page', description: 'Номер страницы', example: 1)]
-    public function getAllEpisodes(
-        #[MapQueryString]
-        EpisodesSummaryQuery $query
-    ): Response
+    public function getAllEpisodes(#[MapQueryString] EpisodesSummaryQuery $query): Response
     {
         return $this->appJson($this->rickAndMortyService->getEpisodes($query->page));
     }
